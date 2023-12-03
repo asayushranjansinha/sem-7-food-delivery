@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
 const Stripe = require('stripe')
+const { Resend } = require("resend");
 
 const app = express();
 app.use(cors());
@@ -85,7 +86,6 @@ app.post("/login", (req, res) => {
 });
 
 //product section
-
 const schemaProduct = mongoose.Schema({
   name: String,
   category:String,
@@ -112,9 +112,8 @@ app.get("/product",async(req,res)=>{
   res.send(JSON.stringify(data))
 })
  
-/*****payment getWay */
+/***** payment getWay */
 console.log(process.env.STRIPE_SECRET_KEY)
-
 
 const stripe  = new Stripe(process.env.STRIPE_SECRET_KEY)
 
@@ -162,6 +161,38 @@ app.post("/create-checkout-session",async(req,res)=>{
 
 })
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+app.get("/contact", async (req, res) => {
+  let {userName,userEmail,userMessage} = req.body;
+
+
+  // Checking if any of the required fields are missing
+  if (!userName || !userEmail || !userMessage) {
+    // Responding with a 400 Bad Request 
+    res.status(400).json({ error: "Missing required fields" });
+    return;
+  }
+
+  try {
+    const htmlContent = `
+    <p><strong>User Name:</strong> ${userName}</p>
+    <p><strong>User Email:</strong> ${userEmail}</p>
+    <p><strong>User Message:</strong> ${userMessage}</p>
+  `;
+    const data = await resend.emails.send({
+      from: "Acme <onboarding@resend.dev>",
+      to: [process.env.APP_ADMIN_EMAIL],
+      subject: "Someone wants to reach out to you!",
+      html: htmlContent,
+      reply_to:userEmail
+    });
+    console.log(process.env.APP_ADMIN_EMAIL)
+    res.status(200).json({ data });
+  } catch (error) {
+    res.status(500).json({ error });
+    console.log(error);
+  }
+});
 
 //server is ruuning
 app.listen(PORT, () => console.log("server is running at port : " + PORT));
