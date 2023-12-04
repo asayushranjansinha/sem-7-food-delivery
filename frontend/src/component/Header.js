@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import logo from "../assest/logo.png";
-import { HiOutlineUserCircle } from "react-icons/hi";
-import { BsCartFill } from "react-icons/bs";
-import { useDispatch, useSelector } from "react-redux";
-import { logoutRedux } from "../redux/userSlice";
 import { toast } from "react-hot-toast";
+import { BsCartFill } from "react-icons/bs";
+import { HiOutlineUserCircle } from "react-icons/hi";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import logo from "../assets/logo.png";
+import { logoutRedux } from "../redux/userSlice";
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -13,14 +13,16 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const handleShowMenu = () => {
-    setShowMenu((preve) => !preve);
-  };
-  const handleLogout = () => {
-    dispatch(logoutRedux());
-    toast("Logout successfully");
+    setShowMenu((prev) => !prev);
   };
 
-  const cartItemNumber = useSelector((state)=>state.product.cartItem)
+  // Function to handle logout
+  const handleLogout = () => {
+    dispatch(logoutRedux());
+    toast.success("Logout successful!");
+  };
+
+  const cartItemNumber = useSelector((state) => state.product.cartItem);
   return (
     <header className="fixed shadow-md w-full h-16 px-2 md:px-4 z-50 bg-white">
       {/* desktop */}
@@ -28,21 +30,20 @@ const Header = () => {
       <div className="flex items-center h-full justify-between">
         <Link to={""}>
           <div className="h-10">
-            <img src={logo} className="h-full" />
+            <img src={logo} className="h-full rounded-xl" />
           </div>
         </Link>
 
         <div className="flex items-center gap-4 md:gap-7">
           <nav className="gap-4 md:gap-6 text-base md:text-lg hidden md:flex">
             <Link to={""}>Home</Link>
-            <Link to={"menu/63f0fdbb3bcc2f97fa53d25d"}>Menu</Link>
-            <Link to={"about"}>About</Link>
-            <Link to={"contact"}>Contact</Link>
+            <Link to={"about"}>About Us</Link>
+            <Link to={"contact"}>Contact Us</Link>
           </nav>
-          <div className="text-2xl text-slate-600 relative">
+          <div className="text-2xl text-slate-600 relative p-2">
             <Link to={"cart"}>
               <BsCartFill />
-              <div className="absolute -top-1 -right-1 text-white bg-red-500 h-4 w-4 rounded-full m-0 p-0 text-sm text-center ">
+              <div className="absolute -top-1 -right-1 bg-red-500 p-1 rounded-md h-4 w-4 flex items-center justify-center text-xs text-white">
                 {cartItemNumber.length}
               </div>
             </Link>
@@ -56,19 +57,19 @@ const Header = () => {
               )}
             </div>
             {showMenu && (
-              <div className="absolute right-2 bg-white py-2  shadow drop-shadow-md flex flex-col min-w-[120px] text-center">
+              <div className="absolute right-2 bg-white p-2  shadow drop-shadow-md rounded-lg flex flex-col min-w-[120px] text-center">
                 {userData.email === process.env.REACT_APP_ADMIN_EMAIL && (
                   <Link
                     to={"newproduct"}
-                    className="whitespace-nowrap cursor-pointer px-2"
+                    className="cursor-pointer px-2 hover:bg-red-500 hover:text-white transition rounded-md"
                   >
-                    New product
+                    Add product
                   </Link>
                 )}
 
-                {userData.image ? (
+                {userData.firstName ? (
                   <p
-                    className="cursor-pointer text-white px-2 bg-red-500"
+                    className="cursor-pointer px-2 hover:bg-red-500 hover:text-white transition rounded-md"
                     onClick={handleLogout}
                   >
                     Logout ({userData.firstName}){" "}
@@ -76,25 +77,19 @@ const Header = () => {
                 ) : (
                   <Link
                     to={"login"}
-                    className="whitespace-nowrap cursor-pointer px-2"
+                    className="cursor-pointer px-2 hover:bg-red-500 hover:text-white transition rounded-md"
                   >
                     Login
                   </Link>
                 )}
-                <nav className="text-base md:text-lg flex flex-col md:hidden">
-                  <Link to={""} className="px-2 py-1">
+                <nav className="text-base md:text-lg flex flex-col md:hidden font-medium">
+                  <Link to={""} className="px-2 py-1 hover:bg-red-500 hover:text-white transition rounded-md">
                     Home
                   </Link>
-                  <Link
-                    to={"menu/63f0fdbb3bcc2f97fa53d25d"}
-                    className="px-2 py-1"
-                  >
-                    Menu
-                  </Link>
-                  <Link to={"about"} className="px-2 py-1">
+                  <Link to={"about"} className="px-2 py-1 hover:bg-red-500 hover:text-white transition rounded-md">
                     About
                   </Link>
-                  <Link to={"contact"} className="px-2 py-1">
+                  <Link to={"contact"} className="px-2 py-1 hover:bg-red-500 hover:text-white transition rounded-md">
                     Contact
                   </Link>
                 </nav>
